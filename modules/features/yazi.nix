@@ -18,6 +18,23 @@
     ];
 
     home-manager.users.sim = {
+      programs.bash = {
+        enable = true;
+        # `y` launches yazi and, on exit, cd's the shell to wherever you
+        # navigated to inside it. Recommended wrapper from the yazi docs:
+        # https://yazi-rs.github.io/docs/quick-start#shell-wrapper
+        initExtra = ''
+          function y() {
+            local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+            yazi "$@" --cwd-file="$tmp"
+            if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+              builtin cd -- "$cwd"
+            fi
+            rm -f -- "$tmp"
+          }
+        '';
+      };
+
       programs.yazi = {
         enable = true;
         settings = {
