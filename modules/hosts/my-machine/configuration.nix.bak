@@ -1,0 +1,82 @@
+{ self, inputs, ...}: {
+	flake.nixosModules.myMachineConfiguration = { config, lib, pkgs, ... }: {
+	  imports =
+	    [
+	    	self.nixosModules.myMachineHardware
+		self.nixosModules.mango
+		self.nixosModules.kitty
+		self.nixosModules.vesktop
+		self.nixosModules.zen
+		self.nixosModules.swaybg
+		self.nixosModules.btop
+		self.nixosModules.wlsunset
+	    ];
+
+	  boot.loader.systemd-boot.enable = true;
+	  boot.loader.efi.canTouchEfiVariables = true;
+
+	  boot.kernelPackages = pkgs.linuxPackages_latest;
+
+	  networking.hostName = "sim";
+
+	  networking.networkmanager.enable = true;
+
+	  time.timeZone = "America/Cayenne";
+
+	  i18n.defaultLocale = "en_US.UTF-8";
+	  console = {
+	    font = "Lat2-Terminus16";
+	    keyMap = "dvorak-programmer";
+	  };
+
+	  services.pipewire = {
+	    enable = true;
+	    pulse.enable = true;
+	  };
+
+	  services.libinput.enable = true;
+
+	  users.users.sim = {
+	    isNormalUser = true;
+	    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+	    packages = with pkgs; [
+	      tree
+	    ];
+	  };
+
+	  environment.systemPackages = with pkgs; [
+	    wget
+	    neovim
+	    git
+	    wezterm
+	    yazi
+	    wget
+	    curl
+	    fd
+	    ripgrep
+	    fzf
+	    imagemagick
+	    wl-clipboard
+	    ffmpegthumbnailer
+	    jq
+	    wlr-randr
+	    wireplumber
+	    brightnessctl
+	    claude-code
+	  ];
+
+	  # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
+	  system.stateVersion = "26.05"; # Did you read the comment?
+	  hardware.graphics.enable = true;
+
+	  fonts.packages = with pkgs; [
+		nerd-fonts.jetbrains-mono
+	  ];
+
+	  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+	  security.sudo.wheelNeedsPassword = false;
+	  nixpkgs.config.allowUnfree = true;
+	  
+	};
+}
+
