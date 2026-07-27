@@ -71,15 +71,8 @@
 	    wget
 	    neovim
 	    git
-	    wget
 	    curl
-	    fd
-	    ripgrep
-	    fzf
-	    imagemagick
 	    wl-clipboard # clipboard
-	    ffmpegthumbnailer # idk
-	    jq # idk
 	    wlr-randr # idk
 	    wireplumber # for audio
 	    brightnessctl # for brightness

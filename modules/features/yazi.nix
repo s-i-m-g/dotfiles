@@ -1,6 +1,17 @@
 { self, inputs, ... }: {
   flake.nixosModules.yazi = { pkgs, lib, ... }: {
     home-manager.users.sim = {
+      # Optional deps for search, preview and fuzzy nav, per
+      # https://yazi-rs.github.io/docs/installation
+      home.packages = with pkgs; [
+        fd # file searching
+        ripgrep # file content searching
+        fzf # quick file subtree navigation
+        imagemagick # font/HEIC/JPEG XL preview
+        ffmpegthumbnailer # video thumbnails
+        jq # JSON preview
+      ];
+
       programs.yazi = {
         enable = true;
         settings = {
