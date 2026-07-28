@@ -19,6 +19,7 @@
 		self.nixosModules.mullvad
 		self.nixosModules.yazi
 		self.nixosModules.mpv
+		self.nixosModules.zsh
 
 	    ];
 

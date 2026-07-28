@@ -15,6 +15,7 @@
       resvg # SVG preview
       imv # image opener
       mpv # video opener
+      wl-clipboard # copy files to system clipboard (wl-copy)
     ];
 
     home-manager.users.sim = {
@@ -37,6 +38,18 @@
 
       programs.yazi = {
         enable = true;
+        keymap = {
+          mgr.prepend_keymap = [
+            {
+              on = [ "y" ];
+              run = [
+                ''shell -- for path in %s; do echo "file://$path"; done | wl-copy -t text/uri-list''
+                "yank"
+              ];
+              desc = "Yank and copy file paths to the system clipboard";
+            }
+          ];
+        };
         settings = {
           opener = {
             edit = [
