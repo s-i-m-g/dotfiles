@@ -18,6 +18,7 @@
 		self.nixosModules.screenshot
 		self.nixosModules.mullvad
 		self.nixosModules.yazi
+		self.nixosModules.mpv
 
 	    ];
 
