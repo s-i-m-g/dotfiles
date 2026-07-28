@@ -86,6 +86,13 @@
 	  system.stateVersion = "26.05"; # Did you read the comment?
 	  hardware.graphics.enable = true;
 
+	  # AMD's GFXOFF powers the iGPU's graphics engine down after a short
+	  # idle period to save battery; waking it back up on the next GPU
+	  # workload (e.g. opening a video in mpv) costs a noticeable ~1.5-2s.
+	  # Always plugged in here, so trade that battery saving for no wake
+	  # latency.
+	  boot.kernelParams = [ "amdgpu.gfxoff=0" ];
+
 	  # Hybrid AMD (iGPU) + Nvidia RTX 3050 (dGPU) laptop.
 	  # AMD drives the internal display by default; Nvidia is offloaded
 	  # on demand via `nvidia-offload <command>`.
