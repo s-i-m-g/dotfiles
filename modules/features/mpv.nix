@@ -1,6 +1,24 @@
 { self, inputs, ... }: {
   flake.nixosModules.mpv = { pkgs, lib, ... }: {
-    environment.systemPackages = [ pkgs.mpv ];
+    # `vulkan-device` in mpv.conf only picks among already-enumerated
+    # devices - the Vulkan loader still enumerates every ICD in
+    # /run/opengl-driver/share/vulkan/icd.d/ first, including
+    # nvidia_icd.json, which resumes the runtime-suspended (PCI D3)
+    # discrete Nvidia GPU just to query it. That resume, not GFXOFF, is
+    # what still causes a ~1.5-2s stall on the first video open after an
+    # idle gap. Scoping VK_ICD_FILENAMES to only the AMD ICD stops the
+    # loader from touching the Nvidia device at all.
+    environment.systemPackages = [
+      (pkgs.symlinkJoin {
+        name = "mpv";
+        paths = [ pkgs.mpv ];
+        nativeBuildInputs = [ pkgs.makeWrapper ];
+        postBuild = ''
+          wrapProgram $out/bin/mpv \
+            --set VK_ICD_FILENAMES /run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json
+        '';
+      })
+    ];
 
     home-manager.users.sim = {
       # libplacebo/Vulkan defaults to the discrete Nvidia GPU, which is
