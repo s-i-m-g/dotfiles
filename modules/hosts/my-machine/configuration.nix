@@ -90,8 +90,10 @@
 	  # idle period to save battery; waking it back up on the next GPU
 	  # workload (e.g. opening a video in mpv) costs a noticeable ~1.5-2s.
 	  # Always plugged in here, so trade that battery saving for no wake
-	  # latency.
-	  boot.kernelParams = [ "amdgpu.gfxoff=0" ];
+	  # latency. `gfxoff=0` alone doesn't reliably stick on this Renoir APU
+	  # (still shows enabled in the amdgpu_gfxoff debugfs after boot), so
+	  # also clear the PP_GFXOFF_MASK bit (0x8000) via ppfeaturemask.
+	  boot.kernelParams = [ "amdgpu.gfxoff=0" "amdgpu.ppfeaturemask=0xffff7fff" ];
 
 	  # Hybrid AMD (iGPU) + Nvidia RTX 3050 (dGPU) laptop.
 	  # AMD drives the internal display by default; Nvidia is offloaded
