@@ -8,8 +8,10 @@
       programs.zsh = {
         enable = true;
         autosuggestion.enable = true;
-        # syntaxHighlighting.enable = true;
+        syntaxHighlighting.enable = true;
         enableCompletion = true;
+
+        defaultKeymap = "viins";
 
         shellAliases = {
           rebuild = "sudo nixos-rebuild switch --flake /home/myNixOS#myMachine";
@@ -21,6 +23,23 @@
           ignoreDups = true;
           share = true;
         };
+
+        initContent = ''
+          unsetopt BEEP
+          export KEYTIMEOUT=1
+
+          ZSH_HIGHLIGHT_STYLES[path]=none
+          ZSH_HIGHLIGHT_STYLES[path_prefix]=none
+
+          bindkey -M viins '^R' history-incremental-search-backward
+          bindkey -M viins '^A' beginning-of-line
+          bindkey -M viins '^E' end-of-line
+        '';
+      };
+
+      programs.starship = {
+        enable = true;
+        enableZshIntegration = true;
       };
     };
   };
