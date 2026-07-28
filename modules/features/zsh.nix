@@ -26,7 +26,7 @@
 
         initContent = ''
           unsetopt BEEP
-          export KEYTIMEOUT=1
+          KEYTIMEOUT=1
 
           ZSH_HIGHLIGHT_STYLES[path]=none
           ZSH_HIGHLIGHT_STYLES[path_prefix]=none
