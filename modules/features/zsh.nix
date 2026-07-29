@@ -28,6 +28,7 @@
           unsetopt BEEP
           KEYTIMEOUT=1
 
+          typeset -gA ZSH_HIGHLIGHT_STYLES
           ZSH_HIGHLIGHT_STYLES[path]=none
           ZSH_HIGHLIGHT_STYLES[path_prefix]=none
 
@@ -35,11 +36,6 @@
           bindkey -M viins '^A' beginning-of-line
           bindkey -M viins '^E' end-of-line
         '';
-      };
-
-      programs.starship = {
-        enable = true;
-        enableZshIntegration = true;
       };
     };
   };
