@@ -1,6 +1,5 @@
 { self, inputs, ... }: {
   flake.nixosModules.zsh = { pkgs, lib, ... }: {
-    # system-level: needed to set zsh as a login shell
     programs.zsh.enable = true;
     users.users.sim.shell = pkgs.zsh;
 
@@ -35,6 +34,8 @@
           bindkey -M viins '^R' history-incremental-search-backward
           bindkey -M viins '^A' beginning-of-line
           bindkey -M viins '^E' end-of-line
+
+          bindkey '^ ' autosuggest-accept
         '';
       };
     };
