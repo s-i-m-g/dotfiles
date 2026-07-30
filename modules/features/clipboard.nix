@@ -7,20 +7,42 @@
       tmp=$(mktemp)
       printf '%s\t' "$id" | ${pkgs.cliphist}/bin/cliphist decode > "$tmp"
       mime=$(${pkgs.file}/bin/file --mime-type -b "$tmp")
+
+      content=$(cat "$tmp")
+      case "$content" in
+        file://*)
+          real=$(printf '%s' "$content" | head -1 | ${pkgs.gnused}/bin/sed 's|^file://||' | tr -d '\r')
+          if [ -f "$real" ]; then
+            rm -f "$tmp"
+            tmp="$real"
+            mime=$(${pkgs.file}/bin/file --mime-type -b "$tmp")
+            KEEP=1
+          fi
+          ;;
+      esac
+
       case "$mime" in
+        image/gif)
+          frame=$(mktemp).png
+          ${pkgs.ffmpeg}/bin/ffmpeg -i "$tmp" -vframes 1 -f image2 "$frame" -y 2>/dev/null
+          ${pkgs.chafa}/bin/chafa --format=kitty --size=80x40 "$frame"
+          rm -f "$frame"
+          ;;
         image/*)
           ${pkgs.chafa}/bin/chafa --format=kitty --size=80x40 "$tmp"
           ;;
         video/*)
-          ${pkgs.ffmpeg}/bin/ffmpeg -i "$tmp" -vframes 1 -f image2 "$tmp.jpg" -y 2>/dev/null
-          ${pkgs.chafa}/bin/chafa --format=kitty --size=80x40 "$tmp.jpg"
-          rm -f "$tmp.jpg"
+          frame=$(mktemp).jpg
+          ${pkgs.ffmpeg}/bin/ffmpeg -i "$tmp" -vframes 1 -f image2 "$frame" -y 2>/dev/null
+          ${pkgs.chafa}/bin/chafa --format=kitty --size=80x40 "$frame"
+          rm -f "$frame"
           ;;
         *)
           cat "$tmp"
           ;;
       esac
-      rm -f "$tmp"
+
+      [ -z "$KEEP" ] && rm -f "$tmp"
     '';
 
     clipPicker = pkgs.writeShellScriptBin "clip-picker" ''
@@ -42,7 +64,7 @@
         allowImages = true;
       };
 
-      home.packages = [ clipPicker preview pkgs.fzf pkgs.chafa pkgs.file pkgs.ffmpeg ];
+      home.packages = [ clipPicker preview pkgs.fzf pkgs.chafa pkgs.file pkgs.ffmpeg pkgs.gnused ];
     };
   };
 }
