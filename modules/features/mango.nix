@@ -265,7 +265,7 @@
           bind=NONE,XF86MonBrightnessDown,spawn,brightnessctl set 5%-
 
           # brightness
-          bind=Alt_R,j,spawn,pkill -f -USR1 mousekeys
+          bind=SUPER,ALT_R,spawn,pkill -f -USR1 mousekeys
  
           # brightness
           bind=NONE,Print,spawn,shot-region
@@ -273,7 +273,11 @@
           # brightness
           bind=SUPER,i,spawn,kitty --class clippicker -e clip-picker
           windowrule=isfloating:1,appid:clippicker
-       '';
+  
+          # brightness
+          bind=SUPER,m,spawn,media-grid-float
+          windowrule=isfloating:1,width:1400,height:900,appid:mediagrid
+      '';
       };
     };
 

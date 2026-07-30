@@ -24,6 +24,7 @@
 		self.nixosModules.clip-to-gif
 		self.nixosModules.clip-split
 		self.nixosModules.clip-reveal
+		self.nixosModules.media-grid
 
 	    ];
 
