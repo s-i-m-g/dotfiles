@@ -8,7 +8,7 @@
       printf '%s\t' "$id" | ${pkgs.cliphist}/bin/cliphist decode > "$tmp"
       mime=$(${pkgs.file}/bin/file --mime-type -b "$tmp")
 
-      content=$(cat "$tmp")
+      content=$(head -c 512 "$tmp" | head -1 | tr -d '\0')
       case "$content" in
         file://*)
           real=$(printf '%s' "$content" | head -1 | ${pkgs.gnused}/bin/sed 's|^file://||' | tr -d '\r')
@@ -54,14 +54,7 @@
       [ -z "$sel" ] && exit 0
       tmp=$(mktemp)
       printf '%s' "$sel" | ${pkgs.cliphist}/bin/cliphist decode > "$tmp"
-      # If the clip is a file:// uri-list (e.g. from clip-split/clip-to-gif),
-      # re-copy it WITH -t text/uri-list — otherwise wl-copy re-advertises it as
-      # text/plain and Discord pastes the path text instead of attaching the file.
-      if ${pkgs.gnugrep}/bin/grep -q '^file://' "$tmp"; then
-        ${pkgs.util-linux}/bin/setsid -f ${pkgs.bash}/bin/bash -c "${pkgs.wl-clipboard}/bin/wl-copy -t text/uri-list < '$tmp'; rm -f '$tmp'" </dev/null >/dev/null 2>&1
-      else
-        ${pkgs.util-linux}/bin/setsid -f ${pkgs.bash}/bin/bash -c "${pkgs.wl-clipboard}/bin/wl-copy < '$tmp'; rm -f '$tmp'" </dev/null >/dev/null 2>&1
-      fi
+      ${pkgs.util-linux}/bin/setsid -f ${pkgs.bash}/bin/bash -c "${pkgs.wl-clipboard}/bin/wl-copy < '$tmp'; rm -f '$tmp'" </dev/null >/dev/null 2>&1
       exit 0
     '';
   in {
@@ -71,7 +64,7 @@
         allowImages = true;
       };
 
-      home.packages = [ clipPicker preview pkgs.fzf pkgs.chafa pkgs.file pkgs.ffmpeg pkgs.gnused pkgs.gnugrep ];
+      home.packages = [ clipPicker preview pkgs.fzf pkgs.chafa pkgs.file pkgs.ffmpeg pkgs.gnused ];
     };
   };
 }

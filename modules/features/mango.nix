@@ -265,7 +265,7 @@
           bind=NONE,XF86MonBrightnessDown,spawn,brightnessctl set 5%-
 
           # brightness
-          bind=SUPER,ALT_R,spawn,pkill -f -USR1 mousekeys
+          bind=ALT,k,spawn,pkill -f -USR1 mousekeys
  
           # brightness
           bind=NONE,Print,spawn,shot-region
@@ -277,7 +277,13 @@
           # brightness
           bind=SUPER,m,spawn,media-grid-float
           windowrule=isfloating:1,width:1400,height:900,appid:mediagrid
-      '';
+   
+          # brightness
+          bind=SUPER,u,spawn,clip-to-gif
+    
+          # brightness
+          bind=SUPER,o,spawn,clip-reveal
+    '';
       };
     };
 
