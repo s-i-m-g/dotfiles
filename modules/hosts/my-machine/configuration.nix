@@ -25,6 +25,7 @@
 		self.nixosModules.clip-split
 		self.nixosModules.clip-reveal
 		self.nixosModules.media-grid
+		self.nixosModules.dl-media
 
 	    ];
 
