@@ -20,6 +20,8 @@
 		self.nixosModules.yazi
 		self.nixosModules.mpv
 		self.nixosModules.zsh
+		self.nixosModules.clipboard
+		self.nixosModules.clip-to-gif
 
 	    ];
 

@@ -269,6 +269,10 @@
  
           # brightness
           bind=NONE,Print,spawn,shot-region
+ 
+          # brightness
+          bind=SUPER,i,spawn,kitty --class clippicker -e clip-picker
+          windowrule=isfloating:1,appid:clippicker
        '';
       };
     };
