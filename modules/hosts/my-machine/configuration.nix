@@ -22,6 +22,7 @@
 		self.nixosModules.zsh
 		self.nixosModules.clipboard
 		self.nixosModules.clip-to-gif
+		self.nixosModules.clip-split
 
 	    ];
 
