@@ -23,6 +23,7 @@
 		self.nixosModules.clipboard
 		self.nixosModules.clip-to-gif
 		self.nixosModules.clip-split
+		self.nixosModules.clip-reveal
 
 	    ];
 
