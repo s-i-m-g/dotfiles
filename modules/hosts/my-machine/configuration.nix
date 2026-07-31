@@ -30,6 +30,7 @@
 		self.nixosModules.to-mp4
 		self.nixosModules.upload-video
 		self.nixosModules.mullvad-browser
+		self.nixosModules.concord
 
 	    ];
 
