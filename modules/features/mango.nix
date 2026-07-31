@@ -265,7 +265,7 @@
           bind=NONE,XF86MonBrightnessDown,spawn,brightnessctl set 5%-
 
           # brightness
-          bind=ALT,k,spawn,pkill -f -USR1 mousekeys
+          bind=ALT,semicolon,spawn,pkill -f -USR1 mousekeys
  
           # brightness
           bind=NONE,Print,spawn,shot-region
