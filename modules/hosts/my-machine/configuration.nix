@@ -26,6 +26,10 @@
 		self.nixosModules.clip-reveal
 		self.nixosModules.media-grid
 		self.nixosModules.dl-media
+		self.nixosModules.mako
+		self.nixosModules.to-mp4
+		self.nixosModules.upload-video
+		self.nixosModules.mullvad-browser
 
 	    ];
 
@@ -87,6 +91,7 @@
 	    claude-code # for coding
 	    grim  # for screenshot
 	    slurp
+	    obsidian
 	  ];
 
 	  # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
