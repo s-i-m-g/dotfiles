@@ -31,6 +31,9 @@
 		self.nixosModules.upload-video
 		self.nixosModules.mullvad-browser
 		self.nixosModules.concord
+		self.nixosModules.screen-record
+		self.nixosModules.nvtop
+		self.nixosModules.caption-gif
 
 	    ];
 
@@ -93,6 +96,7 @@
 	    grim  # for screenshot
 	    slurp
 	    obsidian
+	    unzip
 	  ];
 
 	  # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
