@@ -7,7 +7,6 @@
       tmp=$(mktemp)
       printf '%s\t' "$id" | ${pkgs.cliphist}/bin/cliphist decode > "$tmp"
       mime=$(${pkgs.file}/bin/file --mime-type -b "$tmp")
-
       content=$(head -c 512 "$tmp" | head -1 | tr -d '\0')
       case "$content" in
         file://*)
@@ -20,7 +19,6 @@
           fi
           ;;
       esac
-
       case "$mime" in
         image/gif)
           frame=$(mktemp).png
@@ -41,10 +39,8 @@
           cat "$tmp"
           ;;
       esac
-
       [ -z "$KEEP" ] && rm -f "$tmp"
     '';
-
     clipPicker = pkgs.writeShellScriptBin "clip-picker" ''
       sel=$(${pkgs.cliphist}/bin/cliphist list \
         | ${pkgs.fzf}/bin/fzf --with-nth 2 --delimiter '\t' \
@@ -54,7 +50,22 @@
       [ -z "$sel" ] && exit 0
       tmp=$(mktemp)
       printf '%s' "$sel" | ${pkgs.cliphist}/bin/cliphist decode > "$tmp"
-      ${pkgs.util-linux}/bin/setsid -f ${pkgs.bash}/bin/bash -c "${pkgs.wl-clipboard}/bin/wl-copy < '$tmp'; rm -f '$tmp'" </dev/null >/dev/null 2>&1
+
+      # detect a file uri-list: first line begins with file://
+      first=$(head -1 "$tmp" | tr -d '\r')
+      case "$first" in
+        file://*)
+          # restore as uri-list so Discord attaches and file managers reveal it
+          ${pkgs.util-linux}/bin/setsid -f ${pkgs.bash}/bin/bash -c \
+            "${pkgs.wl-clipboard}/bin/wl-copy -t text/uri-list < '$tmp'; rm -f '$tmp'" \
+            </dev/null >/dev/null 2>&1
+          ;;
+        *)
+          ${pkgs.util-linux}/bin/setsid -f ${pkgs.bash}/bin/bash -c \
+            "${pkgs.wl-clipboard}/bin/wl-copy < '$tmp'; rm -f '$tmp'" \
+            </dev/null >/dev/null 2>&1
+          ;;
+      esac
       exit 0
     '';
   in {
@@ -63,7 +74,6 @@
         enable = true;
         allowImages = true;
       };
-
       home.packages = [ clipPicker preview pkgs.fzf pkgs.chafa pkgs.file pkgs.ffmpeg pkgs.gnused ];
     };
   };

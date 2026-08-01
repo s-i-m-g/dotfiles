@@ -34,6 +34,7 @@
 		self.nixosModules.screen-record
 		self.nixosModules.nvtop
 		self.nixosModules.caption-gif
+		self.nixosModules.speech-bubble
 
 	    ];
 
