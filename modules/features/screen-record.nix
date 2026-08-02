@@ -57,6 +57,50 @@
       notify "recording $output (GPU)..."
     '';
 
+    rec-start-region = pkgs.writeShellScriptBin "rec-start-region" ''
+      # rec-start-region: like rec-start, but drag out a rectangular zone with
+      # slurp and record only that region (wf-recorder -g). Same VAAPI hardware
+      # encode on the AMD node; shares the pidfile/fileref so rec-stop works as-is.
+      set -euo pipefail
+
+      OUTDIR="''${HOME}/Media/recordings"
+      mkdir -p "$OUTDIR"
+      PIDFILE="''${XDG_RUNTIME_DIR:-/tmp}/wf-recorder.pid"
+      FILEREF="''${XDG_RUNTIME_DIR:-/tmp}/wf-recorder.file"
+
+      notify() { ${pkgs.libnotify}/bin/notify-send "screen-record" "$1" 2>/dev/null || true; }
+      die()    { notify "$1"; echo "rec-start-region: $1" >&2; exit 1; }
+
+      if [ -f "$PIDFILE" ] && ${pkgs.procps}/bin/kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
+        die "already recording (run rec-stop)"
+      fi
+
+      # drag a region; slurp prints "X,Y WxH" which is exactly wf-recorder -g's format.
+      # empty output = user pressed Escape / cancelled.
+      region="$(${pkgs.slurp}/bin/slurp 2>/dev/null || true)"
+      [ -n "$region" ] || die "no region selected"
+
+      out="$OUTDIR/rec-$(date +%Y%m%d-%H%M%S).mp4"
+      printf '%s' "$out" > "$FILEREF"
+
+      # -g takes the slurp geometry; wf-recorder infers the output from it.
+      ${pkgs.wf-recorder}/bin/wf-recorder \
+        -g "$region" \
+        --audio="${audioDev}" \
+        -c h264_vaapi \
+        -d ${amdRenderNode} \
+        -p qp=22 \
+        -f "$out" >/dev/null 2>&1 &
+      echo $! > "$PIDFILE"
+
+      sleep 0.5
+      if ! ${pkgs.procps}/bin/kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
+        rm -f "$PIDFILE" "$FILEREF"
+        die "recorder failed to start (VAAPI node? audio device? odd region size?)"
+      fi
+      notify "recording region $region (GPU)..."
+    '';
+
     rec-stop = pkgs.writeShellScriptBin "rec-stop" ''
       # rec-stop: finalize the recording (SIGINT for a clean mp4), then copy the
       # file to the clipboard as a percent-encoded uri-list.
@@ -106,8 +150,8 @@
     '';
   in {
     environment.systemPackages = [
-      rec-start rec-stop
-      pkgs.wf-recorder pkgs.wlr-randr pkgs.rofi pkgs.jq
+      rec-start rec-start-region rec-stop
+      pkgs.wf-recorder pkgs.wlr-randr pkgs.rofi pkgs.jq pkgs.slurp
       pkgs.libnotify pkgs.procps pkgs.util-linux pkgs.bash pkgs.wl-clipboard
     ];
   };
