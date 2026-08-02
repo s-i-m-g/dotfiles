@@ -35,6 +35,7 @@
 		self.nixosModules.nvtop
 		self.nixosModules.caption-gif
 		self.nixosModules.speech-bubble
+		self.nixosModules.remove-caption
 
 	    ];
 
