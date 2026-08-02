@@ -39,6 +39,7 @@
 		self.nixosModules.which-key
 		self.nixosModules.to-mp3
 		self.nixosModules.plode
+		self.nixosModules.fade
 
 	    ];
 
