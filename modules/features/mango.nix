@@ -286,6 +286,9 @@
      
           # wlr-which-key
           bind=ALT,ALT_R,spawn,wlr-which-key
+    
+          # plode
+          windowrule=isfloating:1,width:300,height:90,appid:plodevalue
     '';
       };
     };

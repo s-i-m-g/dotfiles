@@ -38,6 +38,7 @@
 		self.nixosModules.remove-caption
 		self.nixosModules.which-key
 		self.nixosModules.to-mp3
+		self.nixosModules.plode
 
 	    ];
 
