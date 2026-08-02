@@ -13,7 +13,9 @@ FILTER mode: type to narrow — a query containing '/' matches the path
 relative to the scanned root (e.g. 'gifs/' shows only that subfolder),
 otherwise it matches filenames. Enter -> NAV (hjkl/arrows). Enter -> copy
 highlighted file to clipboard as text/uri-list and quit. '/'/Esc back to
-FILTER; Esc in empty FILTER quits; q quits in NAV. Scans CWD recursively.
+FILTER; Esc in empty FILTER quits; q quits in NAV. In NAV: r renames the
+highlighted file (type the new name; the extension is kept automatically),
+D (shift+d) deletes it immediately. Scans CWD recursively.
 """
 import os, sys, hashlib, subprocess, shutil, termios, tty, select, base64, fcntl, struct
 
@@ -160,6 +162,59 @@ def copy_uri(path):
                        stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
     p.stdin.write((uri+"\n").encode()); p.stdin.close()
 
+def prompt_line(fd, rows_ln, label, initial=""):
+    """Blocking one-line editor on the bottom row. Returns the string on Enter,
+    or None on Esc. Reuses read_key so raw mode stays intact."""
+    buf=list(initial)
+    show_cursor()
+    while True:
+        body="".join(buf)
+        move(rows_ln,1)
+        w(f"{CSI}2K{label}{body}")
+        sys.stdout.flush()
+        k=read_key(fd)
+        if k=="ENTER":
+            hide_cursor(); return "".join(buf).strip()
+        if k=="ESC":
+            hide_cursor(); return None
+        if k=="BACKSPACE":
+            if buf: buf.pop()
+        elif k and len(k)==1 and k.isprintable():
+            buf.append(k)
+
+def do_rename(path, newname):
+    """Rename within the same directory. Returns (newpath, msg). newpath is
+    None on failure/cancel."""
+    if not newname or newname in (".",".."):
+        return None,"rename cancelled"
+    if "/" in newname:
+        return None,"rename: no slashes allowed"
+    dst=os.path.join(os.path.dirname(path), newname)
+    if os.path.abspath(dst)==os.path.abspath(path):
+        return path,"unchanged"
+    if os.path.exists(dst):
+        return None,"rename: target exists"
+    try:
+        os.rename(path,dst); return dst,"renamed"
+    except Exception as e:
+        return None,f"rename failed: {e}"
+
+def rename_newname(path, typed):
+    """Turn what the user typed (stem only, usually) into a full filename.
+    If they typed their own '.', respect it; otherwise reappend the original
+    extension so they never have to retype it."""
+    typed=typed.strip()
+    if not typed: return None
+    if "." in typed: return typed
+    _root, ext = os.path.splitext(os.path.basename(path))
+    return typed + ext
+
+def do_delete(path):
+    try:
+        os.remove(path); return True,"deleted"
+    except Exception as e:
+        return False,f"delete failed: {e}"
+
 def read_key(fd):
     ch=os.read(fd,1)
     if ch==b"\033":
@@ -216,6 +271,7 @@ def run():
     fd=sys.stdin.fileno(); old=termios.tcgetattr(fd)
     transmitted=set()
     prev_state=None
+    status=""      # transient message shown after rename/delete
     try:
         tty.setraw(fd); hide_cursor()
         while True:
@@ -246,7 +302,7 @@ def run():
             used_h=len(shown)*ROW_H-GAP_H if shown else 0
             voff=max(0,((rows_ln-1)-used_h)//2)
 
-            state=(query,top,cols_ln,rows_ln,len(files))
+            state=(query,top,cols_ln,rows_ln,len(files),sel if mode=="nav" else -1)
             full = state!=prev_state
             prev_state=state
 
@@ -275,9 +331,14 @@ def run():
                                  i==sel,mode=="nav")
 
             move(rows_ln,1)
-            tag="type" if mode=="filter" else "NAV hjkl · Enter=copy · / =filter"
-            w(f"{CSI}2K[{tag}] > {query}")
+            if mode=="filter":
+                tag="type"
+            else:
+                tag="NAV hjkl · Enter=copy · r=rename · D=delete · / =filter"
+            statusmsg=(" — "+status) if status else ""
+            w(f"{CSI}2K[{tag}]{statusmsg} > {query}")
             sys.stdout.flush()
+            status=""
 
             def vmove(d):
                 nonlocal sel
@@ -307,6 +368,33 @@ def run():
                 elif k in ("RIGHT","l"): sel=min(len(files)-1,sel+1)
                 elif k in ("UP","k"): vmove(-1)
                 elif k in ("DOWN","j"): vmove(1)
+                elif k=="r":
+                    if files:
+                        cur=files[sel]
+                        # empty prompt (name cleared); the extension label shows
+                        # what will be appended so you only type the new stem.
+                        _root,ext=os.path.splitext(os.path.basename(cur))
+                        typed=prompt_line(fd,rows_ln,f"rename> (keeps {ext or 'no ext'}) ","")
+                        if typed is not None:
+                            newname=rename_newname(cur,typed)
+                            if newname is None:
+                                status="rename cancelled"
+                            else:
+                                newpath,msg=do_rename(cur,newname)
+                                allfiles=scan(root)
+                                if newpath and os.path.exists(newpath):
+                                    try: sel=allfiles.index(newpath)
+                                    except ValueError: pass
+                                status=msg
+                        else:
+                            status="rename cancelled"
+                        prev_state=None
+                elif k=="D":
+                    if files:
+                        ok,msg=do_delete(files[sel])
+                        allfiles=scan(root)
+                        status=msg
+                        prev_state=None
     finally:
         show_cursor(); termios.tcsetattr(fd,termios.TCSADRAIN,old)
         clear_all(); delete_all_images(); move(1,1); sys.stdout.flush()
@@ -320,6 +408,7 @@ if __name__=="__main__":
       # media-grid: Discord-gif-picker-style justified rows of media thumbnails
       # with a type-to-filter box, using kitty's Unicode placeholder graphics.
       # Type to filter; Enter -> hjkl nav; Enter again -> copy as uri-list & close.
+      # In nav: r renames (extension kept automatically), D (shift+d) deletes now.
       export PATH="${lib.makeBinPath [
         pkgs.ffmpeg pkgs.imagemagick pkgs.wl-clipboard pkgs.util-linux pkgs.kitty pkgs.coreutils
       ]}:$PATH"

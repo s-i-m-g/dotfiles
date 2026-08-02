@@ -283,6 +283,9 @@
     
           # brightness
           bind=SUPER,o,spawn,clip-reveal
+   
+          # brightness
+          windowrule=isfloating:1,width:600,height:180,appid:captionbox
     '';
       };
     };
