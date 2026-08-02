@@ -6,6 +6,7 @@
         settings = {
           # geometry / placement
           anchor = "top-right";
+          layer = "overlay";        # show above fullscreen windows (default 'top' is covered by them)
           width = 350;
           height = 150;
           margin = "12";
