@@ -264,28 +264,28 @@
           bind=NONE,XF86MonBrightnessUp,spawn,brightnessctl set +5%
           bind=NONE,XF86MonBrightnessDown,spawn,brightnessctl set 5%-
 
-          # brightness
+          # toggle-mousekeys
           bind=ALT,semicolon,spawn,pkill -f -USR1 mousekeys
  
-          # brightness
+          # screen-region
           bind=NONE,Print,spawn,shot-region
  
-          # brightness
+          # clipboard-history
           bind=SUPER,i,spawn,kitty --class clippicker -e clip-picker
           windowrule=isfloating:1,appid:clippicker
   
-          # brightness
+          # media-picker
           bind=SUPER,m,spawn,media-grid-float
           windowrule=isfloating:1,width:1400,height:900,appid:mediagrid
    
-          # brightness
-          bind=SUPER,u,spawn,clip-to-gif
-    
-          # brightness
+          # clip-reveal 
           bind=SUPER,o,spawn,clip-reveal
    
-          # brightness
+          # caption
           windowrule=isfloating:1,width:600,height:180,appid:captionbox
+     
+          # wlr-which-key
+          bind=ALT,ALT_R,spawn,wlr-which-key
     '';
       };
     };

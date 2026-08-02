@@ -36,6 +36,7 @@
 		self.nixosModules.caption-gif
 		self.nixosModules.speech-bubble
 		self.nixosModules.remove-caption
+		self.nixosModules.which-key
 
 	    ];
 
