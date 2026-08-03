@@ -41,6 +41,7 @@
 		self.nixosModules.plode
 		self.nixosModules.fade
 		self.nixosModules.trim-top
+		self.nixosModules.gimp
 
 	    ];
 
