@@ -1,14 +1,17 @@
 { self, inputs, ... }: {
   flake.nixosModules.caption-gif = { pkgs, lib, ... }:
   let
+    # caption.ttf lives next to this module; Nix copies it into the store and
+    # this evaluates to its /nix/store/...-caption.ttf path, so the font travels
+    # with the config instead of depending on a file in ~/.local/share/fonts.
+    captionFont = ./caption.ttf;
+
     captionRun = pkgs.writeShellScriptBin "caption-gif-run" ''
       set -uo pipefail
       OUTDIR="''${HOME}/Media/captioned"
       mkdir -p "$OUTDIR"
-      # caption font: drop your chosen .ttf here as caption.ttf. Falls back to
-      # DejaVu Sans Bold if the file isn't present.
-      FONT="''${HOME}/.local/share/fonts/caption.ttf"
-      [ -f "$FONT" ] || FONT="${pkgs.dejavu_fonts}/share/fonts/truetype/DejaVuSans-Bold.ttf"
+      # caption font: shipped in the Nix config next to this module.
+      FONT="${captionFont}"
       notify() { ${pkgs.libnotify}/bin/notify-send "caption-gif" "$1" 2>/dev/null || true; }
       die()    { notify "$1"; echo "caption-gif: $1" >&2; sleep 2; exit 1; }
       urlencode_path() {
