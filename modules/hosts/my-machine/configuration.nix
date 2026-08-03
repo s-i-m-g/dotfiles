@@ -42,6 +42,7 @@
 		self.nixosModules.fade
 		self.nixosModules.trim-top
 		self.nixosModules.gimp
+		self.nixosModules.to-bin
 
 	    ];
 
