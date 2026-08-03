@@ -24,9 +24,10 @@
         dw, dh = int(iw * scale), int(ih * scale)
         pb = pb_full.scale_simple(dw, dh, GdkPixbuf.InterpType.BILINEAR)
 
-        result = {"xy": None}
+        # two clicks: 1st = tail base (start), 2nd = tail tip (end)
+        clicks = []
 
-        win = Gtk.Window(title="click where the tail points")
+        win = Gtk.Window(title="click 1: tail start   ·   click 2: tail end")
         win.set_default_size(dw, dh)
         win.set_resizable(False)
 
@@ -41,8 +42,9 @@
             iy = int(e.y / scale)
             ix = max(0, min(iw - 1, ix))
             iy = max(0, min(ih - 1, iy))
-            result["xy"] = (ix, iy)
-            Gtk.main_quit()
+            clicks.append((ix, iy))
+            if len(clicks) >= 2:
+                Gtk.main_quit()
 
 
         def on_key(_w, e):
@@ -56,9 +58,9 @@
         win.show_all()
         Gtk.main()
 
-        if result["xy"] is None:
+        if len(clicks) < 2:
             sys.exit(1)
-        print("%d %d" % result["xy"])
+        print("%d %d %d %d" % (clicks[0][0], clicks[0][1], clicks[1][0], clicks[1][1]))
       '';
 
     # Wrap the raw script with wrapGAppsHook3, which auto-collects the full
@@ -79,6 +81,9 @@
     speech-bubble = pkgs.writeShellScriptBin "speech-bubble" ''
       set -euo pipefail
       export PATH=${lib.makeBinPath (with pkgs; [ imagemagick wl-clipboard coreutils findutils gnused gawk libnotify ])}:$PATH
+
+      OUTDIR="$HOME/Media/speech"
+      mkdir -p "$OUTDIR"
 
       TMP="$(mktemp -d)"
       trap 'rm -rf "$TMP"' EXIT
@@ -113,28 +118,26 @@
         exit 1
       fi
 
-      # --- first frame -> picker, get click point in image pixels ---
+      # --- first frame -> picker, get TWO clicks:
+      #     click 1 = tail start (base x on the arc), click 2 = tail end (tip x,y) ---
       magick "$in_gif[0]" "$TMP/frame0.png"
       if ! click="$(${picker}/bin/speech-bubble-pick "$TMP/frame0.png")"; then
         notify-send "speech-bubble" "cancelled"
         exit 0
       fi
-      read CLICK_X CLICK_Y <<< "$click"
+      read BASE_X BASE_Y CLICK_X CLICK_Y <<< "$click"
 
-      # --- full-width shallow arc; skinny tail raking toward nearest edge,
-      #     flipping inward if the outward offset would leave the frame ---
+      # --- full-width shallow arc; skinny tail. Base is centered on the FIRST
+      #     click's x (clamped on-frame); tip is the SECOND click. ---
       CX=$(( W / 2 )); CY=0
       RX=$(( W * 62 / 100 ))
       RY=$(( H * 9 / 100 ))
       BASE_W=60
-      SIDE_OFF=110
 
-      read TAIL_AX TAIL_AY TAIL_BX TAIL_BY <<< "$(awk -v cx=$CX -v rx=$RX -v ry=$RY -v clx=$CLICK_X -v bw=$BASE_W -v off=$SIDE_OFF -v w=$W 'BEGIN{
+      read TAIL_AX TAIL_AY TAIL_BX TAIL_BY <<< "$(awk -v cx=$CX -v rx=$RX -v ry=$RY -v basex=$BASE_X -v bw=$BASE_W -v w=$W 'BEGIN{
         half=bw/2; margin=2;
         lo=margin+half; hi=w-margin-half;
-        dir = (clx < w/2) ? -1 : 1;
-        basec = clx + dir*off;
-        if(basec < lo || basec > hi){ basec = clx - dir*off; }
+        basec = basex;
         if(basec < lo) basec = lo;
         if(basec > hi) basec = hi;
         ax = basec - half; bx = basec + half;
@@ -160,17 +163,16 @@
       out="$TMP/out.gif"
       magick -dispose Background "$TMP"/f_*.png -layers optimize "$out"
 
-      # --- write back as uri-list so Discord attaches ---
-      final="$HOME/.cache/speech-bubble-$$.gif"
-      mkdir -p "$HOME/.cache"
+      # --- save into Media/speech with a timestamped name, then copy as uri-list ---
+      final="$OUTDIR/speech-$(date +%Y%m%d-%H%M%S).gif"
       cp "$out" "$final"
 
       enc="$(printf '%s' "$final" | sed -e 's/%/%25/g' -e 's/ /%20/g')"
       uri="file://$enc"
-      keep="$HOME/.cache/speech-bubble-uri-$$"
+      keep="$TMP/uri"
       printf '%s\r\n' "$uri" > "$keep"
 
-      setsid -f bash -c "wl-copy -t text/uri-list < '$keep'; rm -f '$keep'" >/dev/null 2>&1
+      setsid -f bash -c "wl-copy -t text/uri-list < '$keep'" >/dev/null 2>&1
 
       notify-send "speech-bubble" "carved-bubble gif on clipboard"
     '';
