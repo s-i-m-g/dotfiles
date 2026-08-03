@@ -43,6 +43,8 @@
 		self.nixosModules.trim-top
 		self.nixosModules.gimp
 		self.nixosModules.to-bin
+		self.nixosModules.to-kdenlive
+		self.nixosModules.kdenlive
 
 	    ];
 
