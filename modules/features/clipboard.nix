@@ -11,6 +11,8 @@
       case "$content" in
         file://*)
           real=$(printf '%s' "$content" | head -1 | ${pkgs.gnused}/bin/sed 's|^file://||' | tr -d '\r')
+          # percent-decode (%20 -> space, etc.) so paths with spaces resolve
+          real=$(printf '%b' "''${real//%/\\x}")
           if [ -f "$real" ]; then
             rm -f "$tmp"
             tmp="$real"
