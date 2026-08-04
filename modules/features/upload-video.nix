@@ -58,7 +58,7 @@
       url=""
       attempt=1
       while [ "$attempt" -le "$TRIES" ]; do
-        notify "uploading $fname (try $attempt/$TRIES)..."
+        notify "uploading $fname"
         resp="$($C -fsS -A "$UA" -u ":$apikey" -T "$src" \
           "https://pixeldrain.com/api/file/$encname" 2>/dev/null || true)"
         id="$(printf '%s' "$resp" | "$JQ" -r '.id // empty' 2>/dev/null || true)"
@@ -81,7 +81,7 @@
         "${pkgs.wl-clipboard}/bin/wl-copy < '$urlfile'; rm -f '$urlfile'" \
         </dev/null >/dev/null 2>&1 || true
 
-      notify "uploaded — link copied"
+      notify "done"
       echo "$url"
     '';
   in {

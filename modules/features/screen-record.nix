@@ -54,7 +54,7 @@
         rm -f "$PIDFILE" "$FILEREF"
         die "recorder failed to start (VAAPI node? audio device?)"
       fi
-      notify "recording $output (GPU)..."
+      notify "recording started"
     '';
 
     rec-start-region = pkgs.writeShellScriptBin "rec-start-region" ''
@@ -98,7 +98,7 @@
         rm -f "$PIDFILE" "$FILEREF"
         die "recorder failed to start (VAAPI node? audio device? odd region size?)"
       fi
-      notify "recording region $region (GPU)..."
+      notify "recording region started"
     '';
 
     rec-stop = pkgs.writeShellScriptBin "rec-stop" ''
@@ -145,7 +145,7 @@
         "${pkgs.wl-clipboard}/bin/wl-copy -t text/uri-list < '$urifile'; rm -f '$urifile'" \
         </dev/null >/dev/null 2>&1 || true
 
-      notify "saved $(basename "$out") — copied to clipboard"
+      notify "saved $(basename "$out")"
       echo "$out"
     '';
   in {

@@ -92,7 +92,7 @@
       fi
 
       copy_back "$out"
-      notify "saved $(basename "$out")"
+      notify "done"
       echo "$out"
     '';
   in {

@@ -111,7 +111,7 @@ def main():
          f"wl-copy -t text/uri-list < '{urifile}'; rm -f '{urifile}'"],
         stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    notify(f"caption removed ({y0}px) — copied to clipboard")
+    notify(f"caption removed ({y0}px)")
 
 if __name__ == "__main__":
     main()

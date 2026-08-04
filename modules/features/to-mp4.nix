@@ -82,7 +82,7 @@
         "${pkgs.wl-clipboard}/bin/wl-copy -t text/uri-list < '$urifile'; rm -f '$urifile'" \
         </dev/null >/dev/null 2>&1 || true
 
-      notify "saved $(basename "$out")"
+      notify "done"
       echo "$out"
     '';
   in {

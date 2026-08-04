@@ -70,7 +70,7 @@
       ${pkgs.util-linux}/bin/setsid -f ${pkgs.bash}/bin/bash -c \
         "${pkgs.wl-clipboard}/bin/wl-copy -t text/uri-list < '$urifile'; rm -f '$urifile'" \
         </dev/null >/dev/null 2>&1 || true
-      notify "captioned — copied to clipboard"
+      notify "done"
     '';
     captionGif = pkgs.writeShellScriptBin "caption-gif" ''
       exec ${pkgs.kitty}/bin/kitty --class captionbox \

@@ -63,7 +63,7 @@
       target="$(${pkgs.gawk}/bin/awk "BEGIN{printf \"%d\", $CAP*$TARGET_FRAC}")"
       parts="$(${pkgs.gawk}/bin/awk "BEGIN{p=int(($bytes + $target - 1)/$target); print (p<1)?1:p}")"
 
-      notify "splitting (GPU encode)..."
+      notify "splitting"
 
       # --- encode + segment; verify each part fits, add a part and retry if not ---
       final_parts=0

@@ -41,7 +41,7 @@
       done
 
       if [ "$added" -gt 0 ]; then
-        notify "added $added clip(s) to kdenlive project"
+        notify "added $added"
       else
         die "nothing added"
       fi

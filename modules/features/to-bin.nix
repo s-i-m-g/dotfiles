@@ -51,7 +51,7 @@
       # itself to hold the selection.
       ${pkgs.wl-clipboard}/bin/wl-copy -t image/png < "$png"
 
-      notify "image on clipboard — Ctrl+V in GIMP"
+      notify "done"
     '';
   in {
     environment.systemPackages = [

@@ -101,7 +101,7 @@
             fi
           }
 
-          notify "converting video (''${chosen})..."
+          notify "converting"
           encode "$chosen" || die "video->gif failed"
 
           # verify; if the estimate was optimistic, step down through remaining tiers
@@ -110,7 +110,7 @@
             for t in $tiers; do
               [ "$t" = "$chosen" ] && { past=0; continue; }
               [ "$past" = 1 ] && continue
-              notify "still too big, re-encoding (''${t})..."
+              notify "too big, re-encoding (''${t})..."
               encode "$t" || die "video->gif re-encode failed"
               fits && break
             done
@@ -127,7 +127,7 @@
         </dev/null >/dev/null 2>&1 || true
 
       sz="$(${pkgs.coreutils}/bin/du -h "$out" | cut -f1)"
-      notify "saved $(basename "$out") ($sz)"
+      notify "done"
       echo "$out"
     '';
   in {

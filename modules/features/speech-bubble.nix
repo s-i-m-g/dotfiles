@@ -174,7 +174,7 @@
 
       setsid -f bash -c "wl-copy -t text/uri-list < '$keep'" >/dev/null 2>&1
 
-      notify-send "speech-bubble" "carved-bubble gif on clipboard"
+      notify-send "speech-bubble" "done"
     '';
   in
   {
