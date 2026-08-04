@@ -25,6 +25,8 @@
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.7.0";
 
     concord.url = "github:chojs23/concord";
+
+    blender-cuda.url = "github:adithyagenie/blender-cuda-nixos";
   };
 
   outputs = inputs: inputs.flake-parts.lib.mkFlake {inherit inputs;} (inputs.import-tree ./modules);

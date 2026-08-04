@@ -9,6 +9,9 @@ Images keep their aspect ratio at a fixed row height and pack left-to-right,
 wrapping to fill the window width; rows and the whole block are centered.
 Faint truncated filename under each. Kitty Unicode-placeholder graphics.
 
+Audio files are included too: those with embedded cover art (ID3/FLAC/etc)
+show the cover; those without show a generated cyan waveform image.
+
 FILTER mode: type to narrow — a query containing '/' matches the path
 relative to the scanned root (e.g. 'gifs/' shows only that subfolder),
 otherwise it matches filenames. Enter -> NAV (hjkl/arrows). Enter -> copy
@@ -21,8 +24,10 @@ import os, sys, hashlib, subprocess, shutil, termios, tty, select, base64, fcntl
 
 CACHE = os.path.expanduser("~/.cache/media-grid")
 THUMB_H = 300          # thumbnail pixel height (width follows aspect)
-EXTS   = ("png","jpg","jpeg","webp","bmp","gif","mp4","mkv","webm","mov","avi","m4v")
+EXTS   = ("png","jpg","jpeg","webp","bmp","gif","mp4","mkv","webm","mov","avi","m4v",
+          "mp3","flac","ogg","opus","wav","m4a","aac")
 VIDEXT = ("mp4","mkv","webm","mov","avi","gif","m4v")
+AUDEXT = ("mp3","flac","ogg","opus","wav","m4a","aac")
 IMAGEMAGICK = "magick" if shutil.which("magick") else "convert"
 
 IMG_ROWS = 12      # cells tall per image row
@@ -85,7 +90,23 @@ def make_thumb(path):
     tmp=out+".tmp.png"
     ext=path.lower().rsplit(".",1)[-1]
     try:
-        if ext in VIDEXT:
+        if ext in AUDEXT:
+            # audio: try embedded cover art first (ID3/FLAC/etc carry an image
+            # as a video stream); if there's none, render a waveform image so
+            # every audio file still gets a distinct thumbnail. cached like the
+            # rest, so this only runs once per file.
+            subprocess.run(["ffmpeg","-y","-i",path,"-an","-vcodec","copy",tmp],
+                           capture_output=True)
+            if not (os.path.exists(tmp) and os.path.getsize(tmp) > 0):
+                subprocess.run(
+                    ["ffmpeg","-y","-i",path,"-filter_complex",
+                     f"showwavespic=s=600x{THUMB_H}:colors=cyan",
+                     "-frames:v","1",tmp],
+                    check=True,capture_output=True)
+            else:
+                subprocess.run([IMAGEMAGICK,tmp,"-thumbnail",f"x{THUMB_H}",tmp],
+                               check=True,capture_output=True)
+        elif ext in VIDEXT:
             # ffmpeg exits 0 even when -ss seeks past the end of a short gif and
             # nothing was encoded — check the output file, not the exit code.
             subprocess.run(["ffmpeg","-y","-ss","0.5","-i",path,"-frames:v","1",

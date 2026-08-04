@@ -17,14 +17,36 @@
       anchor: center
 
       menu:
+        - key: "t"
+          desc: "To"
+          submenu:
+            - key: "g"
+              desc: "Gif"
+              cmd: clip-to-gif
+            - key: "s"
+              desc: "Split"
+              cmd: clip-split
+            - key: "v"
+              desc: "MP4"
+              cmd: to-mp4
+            - key: "a"
+              desc: "MP3"
+              cmd: to-mp3
+            - key: "b"
+              desc: "Bin"
+              cmd: to-bin
+            - key: "l"
+              desc: "Link"
+              cmd: upload-video
+            - key: "k"
+              desc: "kdenlive"
+              cmd: to-kdenlive
+
         - key: "g"
           desc: "Clip / GIF"
           submenu:
-            - key: "g"
-              desc: "Clip → GIF"
-              cmd: clip-to-gif
             - key: "c"
-              desc: "Caption GIF"
+              desc: "Caption"
               cmd: caption-gif
             - key: "s"
               desc: "Speech bubble"
@@ -33,11 +55,14 @@
               desc: "Remove caption"
               cmd: remove-caption
             - key: "p"
-              desc: "Split long video"
-              cmd: clip-split
-            - key: "m"
-              desc: "Convert to MP4"
-              cmd: to-mp4
+              desc: "Plode"
+              cmd: plode
+            - key: "f"
+              desc: "Fade"
+              cmd: fade
+            - key: "t"
+              desc: "Trim"
+              cmd: trim-top
 
         - key: "r"
           desc: "Record"
@@ -52,26 +77,13 @@
               desc: "Stop"
               cmd: rec-stop
 
-        - key: "m"
-          desc: "Media"
-          submenu:
-            - key: "g"
-              desc: "Media grid"
-              cmd: media-grid-float
-            - key: "c"
-              desc: "Clipboard picker"
-              cmd: clip-picker
-
         - key: "d"
           desc: "Download / Upload"
           submenu:
             - key: "d"
               desc: "Download media"
               cmd: dl-media
-            - key: "u"
-              desc: "Upload video"
-              cmd: upload-video
-    '';
+   '';
   in {
     home-manager.users.sim = {
       home.packages = [ pkgs.wlr-which-key ];

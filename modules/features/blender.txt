@@ -1,0 +1,5 @@
+command to build the first time : 
+sudo nixos-rebuild switch --flake .#myMachine \
+  --option extra-substituters "https://adithyagenie.cachix.org" \
+  --option extra-trusted-public-keys "adithyagenie.cachix.org-1:h6BSMboeVfxyrULWuRQqAyweo4AJRATekb88xotfQwc=" \
+  --cores 2 --max-jobs 1

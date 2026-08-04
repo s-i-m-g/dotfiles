@@ -45,6 +45,7 @@
 		self.nixosModules.to-bin
 		self.nixosModules.to-kdenlive
 		self.nixosModules.kdenlive
+		self.nixosModules.blender
 
 	    ];
 
