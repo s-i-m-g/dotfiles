@@ -289,7 +289,11 @@
     
           # plode
           windowrule=isfloating:1,width:300,height:90,appid:plodevalue
-    '';
+      
+          # rules
+          layerrule=noblur:1,noanim:1,layer_name:selection
+          layerrule=noblur:1,noanim:1,layer_name:wayfreeze
+   '';
       };
     };
 
