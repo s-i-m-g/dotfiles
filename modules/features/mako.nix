@@ -7,26 +7,25 @@
           # geometry / placement
           anchor = "top-right";
           layer = "overlay";        # show above fullscreen windows (default 'top' is covered by them)
-          width = 350;
-          height = 150;
+          width = 300;
+          height = 100;             # max height; mako shrinks to fit the text within this
           margin = "12";
-          padding = "12";
-          border-size = 2;
+          padding = "8";
+          border-size = 0;
           border-radius = 8;
 
           # timing
           default-timeout = 5000;   # ms; 0 = never expire
           max-visible = 5;
 
-          # appearance
+          # appearance — translucent bg so mango's blur shows through.
+          # colors are #RRGGBBAA; last two hex digits are alpha.
           font = "monospace 11";
-          background-color = "#1e1e2e";
-          text-color = "#cdd6f4";
-          border-color = "#89b4fa";
+          background-color = "#1a1b2666";   # ~0.4 alpha, matches rofi
+          text-color = "#c0caf5ff";
 
           # urgent notifications stick around and stand out
           "urgency=high" = {
-            border-color = "#f38ba8";
             default-timeout = 0;
           };
         };
