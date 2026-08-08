@@ -27,6 +27,8 @@
     concord.url = "github:chojs23/concord";
 
     blender-cuda.url = "github:adithyagenie/blender-cuda-nixos";
+
+    nixcord.url = "github:FlameFlag/nixcord";
   };
 
   outputs = inputs: inputs.flake-parts.lib.mkFlake {inherit inputs;} (inputs.import-tree ./modules);

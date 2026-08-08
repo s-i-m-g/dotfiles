@@ -1,21 +1,32 @@
 { self, inputs, ... }: {
   flake.nixosModules.vesktop = { pkgs, lib, ... }: {
+    nixpkgs.config.allowUnfreePredicate = pkg:
+      builtins.elem (lib.getName pkg) [ "discord" "vesktop" ];
+
     home-manager.users.sim = {
-      programs.vesktop = {
+      imports = [ inputs.nixcord.homeModules.nixcord ];
+
+      programs.nixcord = {
         enable = true;
+        discord.enable = false;
+        vesktop.enable = true;
 
-        settings = {
-          minimizeToTray = true;
-          discordBranch = "stable";
-          arRPC = true;
-        };
+        quickCss = (builtins.readFile ./midnight.theme.css) + ''
+          :root {
+          }
+	  body {
+	    --font: ''';
+	  }
+        '';
 
-        vencord.settings = {
-          autoUpdate = false;
+        config = {
           useQuickCss = true;
+          frameless = true;
+          transparent = true;
+          autoUpdate = false;
           plugins = {
-            MessageLogger.enabled = true;
-            SilentTyping.enabled = true;
+            messageLogger.enable = true;
+            silentTyping.enable = true;
           };
         };
       };
