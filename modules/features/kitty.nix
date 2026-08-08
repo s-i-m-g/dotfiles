@@ -6,7 +6,7 @@
 
         settings = {
           background_opacity = "0";
-          background = "#ffffff";
+          background = "#000000";
 
           hide_window_decorations = "yes";
           tab_bar_edge = "bottom";
