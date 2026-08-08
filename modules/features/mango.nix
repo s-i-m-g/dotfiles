@@ -32,9 +32,9 @@
           blur_params_num_passes = 2
           blur_params_radius = 5
           blur_params_noise = 0.02
-          blur_params_brightness = 0.9
-          blur_params_contrast = 0.9
-          blur_params_saturation = 1.2
+          blur_params_brightness = 0.7
+          blur_params_contrast = 0.5
+          blur_params_saturation = 2
 
           shadows = 0
           layer_shadows = 0
