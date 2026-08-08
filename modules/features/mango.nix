@@ -26,8 +26,8 @@
 
         extraConfig = ''
           # Window effect
-          blur=0
-          blur_layer=0
+          blur=1
+          blur_layer=1
           blur_optimized=1
           blur_params_num_passes = 2
           blur_params_radius = 5
@@ -45,8 +45,8 @@
           shadows_position_y = 0
           shadowscolor= 0x000000ff
 
-          border_radius=6
-          no_radius_when_single=0
+          border_radius=0
+          no_radius_when_single=1
           focused_opacity=1.0
           unfocused_opacity=1.0
 
@@ -77,7 +77,7 @@
           animation_curve_opafadein=0.46,1.0,0.29,1
 
           # Scroller Layout Setting
-          scroller_structs=10
+          scroller_structs=0
           scroller_default_proportion=1.0
           scroller_focus_center=0
           scroller_prefer_center=0
@@ -135,13 +135,13 @@
           mouse_natural_scrolling=0
 
           # Appearance
-          gappih=5
-          gappiv=5
-          gappoh=10
-          gappov=10
+          gappih=0
+          gappiv=0
+          gappoh=0
+          gappov=0
           scratchpad_width_ratio=0.8
           scratchpad_height_ratio=0.9
-          borderpx=4
+          borderpx=0
           rootcolor=0x201b14ff
           bordercolor=0x444444ff
           dropcolor=0x8FBA7C55
@@ -195,7 +195,7 @@
           bind=ALT,TAB,focuslast
 
           bind=ALT,y,togglefloating,
-          bind=ALT,l,togglefullscreen,
+          bind=ALT,l,togglemaximizescreen
 
           bind=ALT,m,minimized,
           bind=ALT+SHIFT,M,restore_minimized
