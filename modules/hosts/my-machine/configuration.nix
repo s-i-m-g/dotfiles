@@ -46,6 +46,7 @@
 		self.nixosModules.to-kdenlive
 		self.nixosModules.kdenlive
 		self.nixosModules.blender
+		self.nixosModules.rofi
 
 	    ];
 
