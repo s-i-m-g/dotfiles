@@ -20,8 +20,8 @@
         enable = true;
 
         autostart_sh = ''
-          ${lib.getExe pkgs.swaybg} -i ${./wallpaperj1.jpg} -m fill &
-	  mousekeys &
+                    ${lib.getExe pkgs.swaybg} -i ${./wallpaperj1.jpg} -m fill &
+          	  mousekeys &
         '';
 
         extraConfig = ''
@@ -196,6 +196,7 @@
 
           bind=ALT,y,togglefloating,
           bind=ALT,l,togglemaximizescreen
+          bind=ALT+SHIFT,l,togglefullscreen
 
           bind=ALT,m,minimized,
           bind=ALT+SHIFT,M,restore_minimized
@@ -266,34 +267,34 @@
 
           # toggle-mousekeys
           bind=ALT,semicolon,spawn,pkill -f -USR1 mousekeys
- 
+
           # screen-region
           bind=NONE,Print,spawn,shot-region
- 
+
           # clipboard-history
           bind=SUPER,i,spawn,kitty --class clippicker -e clip-picker
           windowrule=isfloating:1,appid:clippicker
-  
+
           # media-picker
           bind=SUPER,m,spawn,media-grid-float
           windowrule=isfloating:1,width:1400,height:900,appid:mediagrid
-   
+
           # clip-reveal 
           bind=SUPER,o,spawn,clip-reveal
-   
+
           # caption
           windowrule=isfloating:1,width:600,height:180,appid:captionbox
-     
+
           # wlr-which-key
           bind=ALT,ALT_R,spawn,wlr-which-key
-    
+
           # plode
           windowrule=isfloating:1,width:300,height:90,appid:plodevalue
-      
+
           # rules
           layerrule=noblur:1,noanim:1,layer_name:selection
           layerrule=noblur:1,noanim:1,layer_name:wayfreeze
-   '';
+        '';
       };
     };
 

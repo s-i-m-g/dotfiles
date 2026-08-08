@@ -54,6 +54,11 @@
             ];
 
             # Luau LSP via luau-lsp.nvim — it owns the LSP setup itself.
+            # plugin = { enabled; port } starts the HTTP listener that receives
+            # the live DataModel from the Roblox Studio companion plugin, so
+            # instances built in Studio's 3D editor (not in the Rojo filetree)
+            # show up in intellisense. The port MUST match the port set inside
+            # the Studio companion plugin's settings (default 3667).
             extraPlugins.luau-lsp-nvim = {
               package = pkgs.vimPlugins.luau-lsp-nvim;
               setup = ''
@@ -62,6 +67,10 @@
                   types = { roblox_security_level = "PluginSecurity" },
                   server = {
                     cmd = { "${pkgs.luau-lsp}/bin/luau-lsp", "lsp" },
+                  },
+                  plugin = {
+                    enabled = true,
+                    port = 3667,
                   },
                 })
               '';
