@@ -12,10 +12,10 @@ Faint truncated filename under each. Kitty Unicode-placeholder graphics.
 Audio files are included too: those with embedded cover art (ID3/FLAC/etc)
 show the cover; those without show a generated cyan waveform image.
 
-FILTER mode: type to narrow — a query containing '/' matches the path
-relative to the scanned root (e.g. 'gifs/' shows only that subfolder),
-otherwise it matches filenames. Enter -> NAV (hjkl/arrows). Enter -> copy
-highlighted file to clipboard as text/uri-list and quit. '/'/Esc back to
+FILTER mode: type to fuzzy-narrow — query chars match in order (not
+contiguous) and results rank by match quality. A query containing '/'
+matches the path relative to the scanned root (e.g. 'gifs/x' narrows into
+that subfolder), otherwise it matches filenames. Enter -> NAV (hjkl/arrows).
 FILTER; Esc in empty FILTER quits; q quits in NAV. In NAV: r renames the
 highlighted file (type the new name; the extension is kept automatically),
 D (shift+d) deletes it immediately. Scans CWD recursively.
@@ -130,6 +130,34 @@ def png_size(p):
             return struct.unpack(">II",h[16:24])
     except Exception: pass
     return None
+
+def fuzzy_score(query, text):
+    """Subsequence fuzzy match with scoring. Returns None if query isn't a
+    subsequence of text; otherwise a score (higher = better). Rewards
+    consecutive matches, matches at word boundaries, and matches near the
+    start. Case-insensitive. Empty query scores 0 (everything matches)."""
+    if not query:
+        return 0
+    q=query.lower(); t=text.lower()
+    ti=0; score=0; streak=0; prev_sep=True; first_idx=None
+    for qc in q:
+        found=False
+        while ti<len(t):
+            c=t[ti]; is_sep=c in " _-./"
+            if c==qc:
+                if first_idx is None: first_idx=ti
+                score+=1
+                if streak>0: score+=streak*2
+                if prev_sep: score+=3
+                streak+=1; prev_sep=is_sep; ti+=1; found=True; break
+            else:
+                streak=0; prev_sep=is_sep; ti+=1
+        if not found:
+            return None
+    if first_idx is not None:
+        score+=max(0,10-first_idx)*0.5
+    score-=len(t)*0.01
+    return score
 
 def scan(root):
     out=[]
@@ -298,16 +326,23 @@ def run():
         while True:
             cols_ln,rows_ln=term_size()
             cw,chh=cell_px(fd)
-            # path-aware filter: a query containing '/' matches against the
-            # path relative to root (so 'gifs/' narrows to that subfolder);
-            # otherwise match filenames only.
-            q=query.lower()
-            if "/" in q:
-                files=[f for f in allfiles
-                       if q in os.path.relpath(f,root).lower()]
+            # fuzzy filter: query chars must appear in order (not necessarily
+            # contiguous); results are ranked by match quality. A query with '/'
+            # is matched against the path relative to root (so 'gifs/x' narrows
+            # into a subfolder), otherwise against the filename only.
+            if query:
+                use_path = "/" in query
+                scored=[]
+                for f in allfiles:
+                    target=(os.path.relpath(f,root) if use_path
+                            else os.path.basename(f))
+                    s=fuzzy_score(query, target)
+                    if s is not None:
+                        scored.append((s,f))
+                scored.sort(key=lambda sf:-sf[0])
+                files=[f for _,f in scored]
             else:
-                files=[f for f in allfiles
-                       if q in os.path.basename(f).lower()]
+                files=list(allfiles)
             if sel>=len(files): sel=max(0,len(files)-1)
             if sel<0: sel=0
             rows=build_rows(files,cols_ln,cw,chh)
