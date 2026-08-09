@@ -60,6 +60,8 @@
 
       ];
 
+      home-manager.backupFileExtension = "hm-bak";
+
       boot.loader.systemd-boot.enable = true;
       boot.loader.efi.canTouchEfiVariables = true;
 

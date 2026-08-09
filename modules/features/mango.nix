@@ -294,6 +294,13 @@
           # rules
           layerrule=noblur:1,noanim:1,layer_name:selection
           layerrule=noblur:1,noanim:1,layer_name:wayfreeze
+
+          # mousebinds
+          mousebind=SUPER,btn_left,moveresize,curmove
+          mousebind=SUPER,btn_right,moveresize,curresize
+
+
+
         '';
       };
     };

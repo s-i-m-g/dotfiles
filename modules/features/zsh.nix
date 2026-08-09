@@ -15,6 +15,8 @@
         shellAliases = {
           rebuild = "sudo nixos-rebuild switch --flake /home/myNixOS#myMachine";
           ll = "ls -la";
+          rsmap = "rojo sourcemap default.project.json -o sourcemap.json --watch";
+          rserve = "rojo serve";
         };
 
         history = {
