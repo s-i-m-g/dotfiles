@@ -114,12 +114,9 @@
         git
         curl
         wl-clipboard # clipboard
-        wlr-randr # idk
         wireplumber # for audio
         brightnessctl # for brightness
         claude-code # for coding
-        grim # for screenshot
-        slurp
         obsidian
         unzip
       ];

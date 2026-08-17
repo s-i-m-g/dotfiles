@@ -103,7 +103,7 @@
           warpcursor=1
           focus_cross_monitor=0
           focus_cross_tag=0
-          enable_floating_snap=0
+          enable_floating_snap=1
           snap_distance=30
           cursor_size=24
           drag_tile_to_tile=1
@@ -125,7 +125,7 @@
           tap_and_drag=1
           drag_lock=1
           trackpad_natural_scrolling=0
-          disable_while_typing=1
+          disable_while_typing=0
           left_handed=0
           middle_button_emulation=0
           swipe_min_threshold=1
